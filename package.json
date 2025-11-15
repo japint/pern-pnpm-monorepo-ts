@@ -1,0 +1,29 @@
+{
+  "name": "pern-monorepo",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "install:all": "pnpm --recursive install",
+    "dev": "concurrently \"pnpm --filter api dev\" \"pnpm --filter web dev\" --names \"API,WEB\" --prefix-colors \"blue,green\"",
+    "dev:api": "pnpm --filter api dev",
+    "dev:web": "pnpm --filter web dev",
+    "gen:client": "openapi-typescript-codegen --input ./openapi.yaml --output ./packages/shared/src/api --client axios",
+    "build": "pnpm -w -r run build",
+    "start": "pnpm -w -r run start",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,yaml,yml}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,yaml,yml}\"",
+    "type-check": "pnpm -w -r run type-check",
+    "clean": "pnpm -w -r exec -- rm -rf dist .next out build node_modules/.cache"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.46.4",
+    "@typescript-eslint/parser": "^8.46.4",
+    "concurrently": "^9.2.1",
+    "eslint": "^9.39.1",
+    "eslint-config-prettier": "^10.1.8",
+    "openapi-typescript-codegen": "^0.29.0",
+    "prettier": "^3.6.2"
+  }
+}
