@@ -1,5 +1,7 @@
 import React from "react";
 import { UserProvider } from "./context/UserContext";
+import Navbar from "@/components/Navbar";
+import "./globals.css";
 
 export const metadata = {
   title: "PERN Monorepo",
@@ -13,8 +15,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
-        <UserProvider>{children}</UserProvider>
+      <body className="min-h-screen bg-gray-50">
+        <UserProvider>
+          <Navbar />
+          <main className="container mx-auto px-4 py-8">{children}</main>
+        </UserProvider>
       </body>
     </html>
   );
