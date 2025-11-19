@@ -1,6 +1,6 @@
 import React from "react";
-import { UserProvider } from "./context/UserContext";
-import Navbar from "@/components/Navbar";
+import { UserProvider } from "./context";
+import { Navbar } from "@/components";
 import "./globals.css";
 
 export const metadata = {
