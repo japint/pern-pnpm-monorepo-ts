@@ -1,4 +1,4 @@
-import { UserDetail } from "@/components";
+import UserDetailView from "./views/UserDetailView";
 
 // Dynamic route - [id] becomes a parameter
 export default async function UserDetailPage({
@@ -7,13 +7,6 @@ export default async function UserDetailPage({
   params: { id: string };
 }) {
   const { id } = params;
-
-  return (
-    <div className="space-y-6">
-      <h1 className="text-3xl font-bold text-gray-900">User Details</h1>
-
-      {/* Pass data to presentation component */}
-      <UserDetail userId={id} />
-    </div>
-  );
+  // Fetch data here if needed, pass as props to view
+  return <UserDetailView userId={id} />;
 }
