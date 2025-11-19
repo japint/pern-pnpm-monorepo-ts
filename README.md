@@ -1,9 +1,10 @@
 # PERN Monorepo with pnpm & TypeScript
 
-A **production-ready** monorepo template using **pnpm workspaces**, **TypeScript**, **Express API**, **Next.js 14**, and **OpenAPI** code generation. Features concurrent development with color-coded terminal output, ESLint, Prettier, and comprehensive error handling.
+A **production-ready** monorepo template using **pnpm workspaces**, **TypeScript**, **Express API**, **Next.js 14 App Router**, **Tailwind CSS**, and **OpenAPI** specification. Features concurrent development, Separation of Concerns architecture, barrel exports, and modern React patterns.
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue.svg)](https://www.typescriptlang.org/)
 [![Next.js](https://img.shields.io/badge/Next.js-14.0-black.svg)](https://nextjs.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.0-38B2AC.svg)](https://tailwindcss.com/)
 [![pnpm](https://img.shields.io/badge/pnpm-8.0-orange.svg)](https://pnpm.io/)
 
 ## 🚀 Quick Start
@@ -71,13 +72,42 @@ pern-pnpm-monorepo-ts/
 │  │  │  └─ api/             # OpenAPI generated client (target)
 │  │  └─ package.json
 │  │
-│  └─ web/                   # Next.js 14 frontend (App Router)
+│  └─ web/                   # Next.js 14 frontend (App Router + Tailwind)
 │     ├─ app/
+│     │  ├─ about/           # About page route
+│     │  │  ├─ page.tsx      # Route handler
+│     │  │  └─ views/
+│     │  │     └─ AboutView.tsx  # Presentation component
 │     │  ├─ context/
-│     │  │  └─ UserContext.tsx  # React context for user state
-│     │  ├─ layout.tsx       # Root layout
-│     │  └─ page.tsx         # Home page
+│     │  │  ├─ UserContext.tsx   # React context for user state
+│     │  │  └─ index.ts          # Barrel export
+│     │  ├─ dashboard/       # Dashboard route
+│     │  │  ├─ layout.tsx    # Dashboard-specific layout (sidebar)
+│     │  │  ├─ page.tsx
+│     │  │  └─ views/
+│     │  │     └─ DashboardView.tsx
+│     │  ├─ users/           # Users section
+│     │  │  ├─ [id]/         # Dynamic route for user details
+│     │  │  │  ├─ page.tsx
+│     │  │  │  └─ views/
+│     │  │  │     └─ UserDetailView.tsx
+│     │  │  ├─ page.tsx
+│     │  │  └─ views/
+│     │  │     └─ UsersView.tsx
+│     │  ├─ views/           # Root page views
+│     │  │  ├─ HomePage.tsx
+│     │  │  └─ index.ts
+│     │  ├─ globals.css      # Tailwind directives + global styles
+│     │  ├─ layout.tsx       # Root layout (navbar, providers)
+│     │  └─ page.tsx         # Home page route
+│     ├─ components/         # Reusable UI components
+│     │  ├─ Navbar.tsx       # Navigation component
+│     │  ├─ UserList.tsx     # User list table
+│     │  ├─ UserDetail.tsx   # User detail card
+│     │  └─ index.ts         # Barrel export
 │     ├─ next.config.js
+│     ├─ postcss.config.js   # PostCSS with Tailwind
+│     ├─ tailwind.config.js  # Tailwind CSS configuration
 │     ├─ package.json
 │     └─ tsconfig.json
 │
@@ -101,15 +131,23 @@ pern-pnpm-monorepo-ts/
 
 - **Next.js 14** - React framework with App Router
 - **React 18** - UI library
+- **Tailwind CSS 3** - Utility-first CSS framework
 - **Axios** - HTTP client
 - **TypeScript** - Type-safe components
+
+### Architecture Patterns
+
+- **Separation of Concerns (SoC)** - Clear separation between routing, views, and components
+- **Barrel Exports** - Clean imports with index files
+- **Views Pattern** - Page-specific UI logic separated from route handlers
+- **Component-Based** - Reusable UI components with consistent styling
 
 ### Development Tools
 
 - **pnpm** - Fast, disk space efficient package manager
-- **OpenAPI 3.0** - API specification
-- **openapi-typescript-codegen** - Generate TypeScript client from OpenAPI spec
+- **OpenAPI 3.0** - API specification and documentation
 - **Concurrently** - Run multiple commands simultaneously
+- **ESLint & Prettier** - Code quality and formatting
 
 ## 📦 Package Configuration
 
@@ -238,6 +276,61 @@ components:
 | `pnpm start`        | Start all packages in production mode              |
 | `pnpm clean`        | Remove build artifacts and cache                   |
 
+## 🏗️ Architecture & Patterns
+
+### Separation of Concerns (SoC)
+
+The project follows modern React/Next.js patterns with clear separation:
+
+```
+Route Handling (page.tsx)
+    ↓
+View Logic (views/*.tsx)
+    ↓
+UI Components (components/*.tsx)
+```
+
+**Example Structure:**
+
+```typescript
+// app/users/page.tsx - Routing & Data Fetching
+export default async function UsersPage() {
+  // Handle URL params, fetch data
+  return <UsersView />;
+}
+
+// app/users/views/UsersView.tsx - Page-specific UI
+export default function UsersView() {
+  // Business logic, hooks, composition
+  return <UserList />; // Uses reusable component
+}
+
+// components/UserList.tsx - Reusable UI
+export default function UserList() {
+  // Generic, reusable across pages
+}
+```
+
+### Layout System
+
+- **Root Layout** (`app/layout.tsx`) - Navbar, providers, global styles
+- **Nested Layouts** (`app/dashboard/layout.tsx`) - Section-specific UI (sidebar)
+- **Views** (`app/*/views/*.tsx`) - Page-specific presentation
+- **Components** (`components/*.tsx`) - Reusable UI elements
+
+### Barrel Exports
+
+Clean imports using index files:
+
+```typescript
+// Instead of:
+import Navbar from "@/components/Navbar";
+import UserList from "@/components/UserList";
+
+// Use:
+import { Navbar, UserList } from "@/components";
+```
+
 ## 🚦 Development Workflow
 
 1. **Start Development Servers**
@@ -250,12 +343,26 @@ components:
 
 2. **Update API Specification**
    - Edit `openapi.yaml`
-   - Regenerate client: `pnpm gen:client`
-   - The generated TypeScript client will be in `packages/shared/src/api/`
+   - Preview with Swagger Editor (VS Code extension)
+   - The spec documents your API endpoints
 
 3. **Access Applications**
    - API: http://localhost:5000
    - Web: http://localhost:3000
+
+4. **Add New Pages**
+
+   ```bash
+   mkdir -p packages/web/app/new-page/views
+   # Create page.tsx (route handler)
+   # Create views/NewPageView.tsx (presentation)
+   ```
+
+5. **Add New Components**
+   ```bash
+   # Create in packages/web/components/
+   # Add to components/index.ts for barrel export
+   ```
 
 ## 🎯 Key Features
 
@@ -263,15 +370,23 @@ components:
 
 ✅ **Monorepo Structure** - Single repository with multiple packages  
 ✅ **Type Safety** - Full TypeScript coverage across all packages  
-✅ **Code Generation** - Auto-generate API client from OpenAPI spec  
+✅ **Separation of Concerns** - Clear separation between routing, views, and components  
 ✅ **Workspace Management** - Efficient dependency management with pnpm
+
+### Modern Frontend
+
+✅ **Next.js 14 App Router** - Latest routing with React Server Components  
+✅ **Tailwind CSS 3** - Utility-first styling with responsive design  
+✅ **Barrel Exports** - Clean import patterns with index files  
+✅ **Views Pattern** - Scalable page organization for large applications
 
 ### Development Experience
 
 ✅ **Hot Reload** - Both API and Web support hot module replacement  
 ✅ **Concurrent Development** - Run multiple servers with color-coded logs  
 ✅ **ESLint + Prettier** - Consistent code quality and formatting  
-✅ **VS Code Integration** - Pre-configured workspace settings
+✅ **VS Code Integration** - Pre-configured workspace settings  
+✅ **OpenAPI Specification** - API documentation with Swagger preview
 
 ### Production Ready
 
@@ -287,6 +402,7 @@ components:
 api/
 ├─ express
 ├─ cors
+├─ dotenv
 └─ devDependencies:
    ├─ @types/express
    ├─ @types/cors
@@ -299,11 +415,16 @@ web/
 ├─ react
 ├─ react-dom
 ├─ axios
+├─ tailwindcss
+├─ postcss
 └─ devDependencies:
-   └─ @types/react
+   ├─ @types/react
+   ├─ @types/react-dom
+   ├─ autoprefixer
+   └─ typescript
 
 shared/
-└─ (generated API client code)
+└─ (shared types and utilities)
 ```
 
 ## ⚙️ Configuration
